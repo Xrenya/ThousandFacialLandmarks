@@ -1,0 +1,3 @@
+_target_: detector.models.head.Regressor
+in_features: 1000
+out_features: 971

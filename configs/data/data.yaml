@@ -1,0 +1,25 @@
+dataframe:
+  landmarks: ${original_work_dir}/data/train/landmarks.csv
+  landmarks_train: landmarks_train.csv
+  landmarks_val: landmarks_val.csv
+  landmarks_test: ${original_work_dir}/data/sampleSubmission.csv
+  train_size: 0.5
+  shuffle: True
+dataset:
+  augmentatoins_train:
+    _target_: detector.utils.utils.Augmentation
+    augmentations: ${original_work_dir}/configs/data/train_transform.json
+  augmentatoins_val:
+    _target_: detector.utils.utils.Augmentation
+    augmentations: ${original_work_dir}/configs/data/transform.json
+  augmentatoins_test:
+    _target_: detector.utils.utils.Augmentation
+    augmentations: ${original_work_dir}/configs/data/transform.json
+
+image_path: ${original_work_dir}/data/train/images/
+
+#landmarks_train: data/train/landmarks_train.csv
+#landmarks_val: data/train/landmarks_val.csv
+#landmarks_test: data/sampleSubmission.csv
+#transforms: null
+#train_test_split: 0.5

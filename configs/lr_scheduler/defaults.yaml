@@ -1,0 +1,10 @@
+hydra:
+  run:
+    dir: .
+  sweep:
+    dir: .hydra/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  job_logging:
+    handlers:
+      file:
+        filename: .hydra/${hydra.job.name}.log
+  output_subdir: .hydra/configs/${now:%Y-%m-%d}/${now:%H-%M-%S}

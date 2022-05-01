@@ -1,0 +1,2 @@
+_target_: detector.models.models.ResNet18
+pretrained: False
