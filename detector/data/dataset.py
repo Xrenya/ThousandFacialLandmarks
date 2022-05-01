@@ -10,6 +10,7 @@ from detector.utils.utils import worker_init_fn
 import logging
 from sklearn.model_selection import train_test_split
 from hydra.utils import instantiate
+import torch
 
 
 class DetectionDataset(ABC, Dataset):
@@ -28,15 +29,17 @@ class DetectionDataset(ABC, Dataset):
         sample = {}
         if self.keypoints:
             keypoints = np.array(self.df.iloc[index, 1:])
-            sample["keypoints"] = [
-                (keypoints[i], keypoints[i+1]) for i in range(0, len(keypoints), 2)
-            ]
+            sample["keypoints"] = keypoints.reshape((len(keypoints) // 2, 2))
         image_path = os.path.join(str(self.images), self.df.iloc[index, 0])
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         sample["image"] = image
         if self.transforms is not None:
             sample = self.transforms(**sample)
+            keypoints = sample.get("keypoints", None)
+            if keypoints is not None:
+                keypoints = np.array([np.array(x) for x in keypoints]).flatten()
+                sample["keypoints"] = torch.tensor(keypoints)
         return sample
 
 
