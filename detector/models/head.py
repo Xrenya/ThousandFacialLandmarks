@@ -17,4 +17,4 @@ class Head(ABC, nn.Module):
 class Regressor(Head):
     def __init__(self, in_features, out_features):
         super().__init__()
-        self.regressor = nn.Linear(in_features, 2 * out_features, bias=True)
+        self.head = nn.Linear(in_features, out_features, bias=True)

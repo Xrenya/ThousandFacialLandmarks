@@ -11,5 +11,6 @@ class Regressor(nn.Module):
 
     def forward(self, x):
         x = self.backbone(x)
+        x = x.flatten(1)
         x = self.head(x)
         return x
