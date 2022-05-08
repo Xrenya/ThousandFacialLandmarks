@@ -3,20 +3,20 @@ dataframe:
   landmarks_train: landmarks_train.csv
   landmarks_val: landmarks_val.csv
   landmarks_test: ${original_work_dir}/data/sampleSubmission.csv
-  train_size: 0.5
+  train_size: 0.97
   shuffle: True
 dataset:
   augmentatoins_train:
-    _target_: detector.utils.utils.Augmentation
-    augmentations: ${original_work_dir}/configs/data/train_transform.json
+    _target_: detector.utils.utils.train_augmentation
+    crop_size: 127
   augmentatoins_val:
-    _target_: detector.utils.utils.Augmentation
-    augmentations: ${original_work_dir}/configs/data/transform.json
+    _target_: detector.utils.utils.train_augmentation
+    crop_size: 127
   augmentatoins_test:
-    _target_: detector.utils.utils.Augmentation
-    augmentations: ${original_work_dir}/configs/data/transform.json
+    _target_: detector.utils.utils.test_augmentation
+    crop_size: 127
 
-image_path: ${original_work_dir}/data/train/images/
+image_path: ${original_work_dir}/data/
 
 #landmarks_train: data/train/landmarks_train.csv
 #landmarks_val: data/train/landmarks_val.csv

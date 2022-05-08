@@ -4,7 +4,9 @@
 defaults:
   - _self_
   - data: data.yaml
-  - model: model.yaml
+  - model: densenet169.yaml
+  - loss: l1l2.yaml
+  - optimizer: adam.yaml
 #  - callbacks: default.yaml
   - logger: null # set logger here or use command line (e.g. `python train.py logger=tensorboard`)
 #  - trainer: default.yaml
@@ -12,7 +14,7 @@ defaults:
 
   # experiment configs allow for version control of specific configurations
   # e.g. best hyperparameters for each combination of model and datamodule
-  - experiment: null
+#  - experiment: resnet18
 
 # path to original working directory
 # hydra hijacks working directory by changing it to the new log directory
@@ -48,7 +50,8 @@ num_pts: 971
 num_workers: 0
 batch_size: 16
 batch_size_inference: 8
-epochs: 1
+epochs: 5
 # default name for the experiment, determines logging folder path
 # (you can overwrite this name in experiment configs)
-name: "default"
+name: "resnet18"
+logger: ${original_work_dir}/configs/logger.yaml

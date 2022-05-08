@@ -1,1 +1,5 @@
-_target_: detector.optimizer.optimizer.Adam
+optimizer:
+  _target_: detector.optimizer.optimizer.Adam
+  params: ???
+  lr: 0.001
+  weight_decay: 0
