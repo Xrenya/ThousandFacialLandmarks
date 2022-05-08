@@ -13,6 +13,9 @@ from hydra.utils import instantiate
 import torch
 
 
+logger = logging.getLogger("logs")
+
+
 class DetectionDataset(ABC, Dataset):
     @abstractmethod
     def __init__(self):
@@ -28,26 +31,22 @@ class DetectionDataset(ABC, Dataset):
     def __getitem__(self, index: int):
         sample = {}
         if self.keypoints:
-            keypoints = np.array(self.df.iloc[index, 1:])
-            sample["keypoints"] = keypoints.reshape((len(keypoints) // 2, 2))
+            keypoints = np.array(self.df.iloc[index, 1:], dtype=np.float32)
+            sample["keypoints"] = torch.tensor(keypoints)
         image_path = os.path.join(str(self.images), self.df.iloc[index, 0])
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         sample["image"] = image
         if self.transforms is not None:
-            sample = self.transforms(**sample)
-            keypoints = sample.get("keypoints", None)
-            if keypoints is not None:
-                keypoints = np.array([np.array(x) for x in keypoints]).flatten()
-                sample["keypoints"] = torch.tensor(keypoints)
+            sample = self.transforms(sample)
         return sample
 
 
 class ThousandLandmarksDataset(DetectionDataset):
-    def __init__(self, df: pd.DataFrame, image_path: str, split: str, transforms: Optional[A.Compose] = None):
+    def __init__(self, df: pd.DataFrame, image_path: str, split: str, transforms: Optional = None):
         super(ThousandLandmarksDataset, self).__init__()
         self.df = df
-        self.images = image_path
+        self.images = os.path.join(image_path, split + "/images")
         self.keypoints = 0
         if transforms is not None:
             self.transforms = instantiate(transforms)
@@ -71,9 +70,9 @@ def get_dataframes(
 
     test_df = pd.read_csv(landmarks_test)
 
-    logging.info(f"Train dataset's samples: {len(train_df)}")
-    logging.info(f"Valid dataset's samples: {len(valid_df)}")
-    logging.info(f"Test dataset's samples: {len(test_df)}")
+    logger.info(f"Train dataset's samples: {len(train_df)}")
+    logger.info(f"Valid dataset's samples: {len(valid_df)}")
+    logger.info(f"Test dataset's samples: {len(test_df)}")
 
     return train_df, valid_df, test_df
 
@@ -96,7 +95,7 @@ def get_dataset(image_path, train_df, valid_df, test_df, augmentatoins_train, au
     test_dataset = ThousandLandmarksDataset(
         test_df,
         image_path,
-        "inference",
+        "test",
         augmentatoins_test
     )
 
@@ -128,7 +127,7 @@ def get_loaders(config):
 
     test_loader = DataLoader(
         test_dataset,
-        batch_size=config.batch_size_inference,
+        batch_size=config.batch_size,
         shuffle=False,
         num_workers=config.num_workers,
         worker_init_fn=worker_init_fn,
